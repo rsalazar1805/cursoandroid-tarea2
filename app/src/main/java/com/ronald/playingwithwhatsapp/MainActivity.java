@@ -1,18 +1,16 @@
 package com.ronald.playingwithwhatsapp;
 
+import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.loopj.android.http.*;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import cz.msebera.android.httpclient.*;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -25,12 +23,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Button btnEnviar = (Button) findViewById(R.id.btnEnviar);
+        Button btnEnviar = findViewById(R.id.btnEnviar);
 
         Listener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                APICaller();
+                //openWhatsApp(view);
+                SendToWhatup(view);
             }
         };
 
@@ -39,35 +38,50 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void APICaller() {
-        Toast.makeText(this, "Ha hecho click", Toast.LENGTH_LONG).show();
+    private void openWhatsApp(View view){
+        PackageManager pm=getPackageManager();
+        try {
+            String text = "Esto es una prueba"; // Replace with your own message.
+            //String toNumber = "50687994999"; //
+            String toNumber = "50688165112"; //
+            PackageInfo info=pm.getPackageInfo("com.whatsapp", PackageManager.GET_META_DATA);
 
-        RequestParams rp = new RequestParams();
-        rp.add("username", "aaa"); rp.add("password", "aaa@123");
+            Intent waIntent = new Intent(Intent.ACTION_SEND);
+            waIntent.putExtra(Intent.EXTRA_TEXT, text);
+            waIntent.putExtra(Intent.EXTRA_TEXT, toNumber);
+            waIntent.setType("text/plain");
+
+            waIntent.setPackage("com.whatsapp");
 
 
+            startActivity(Intent.createChooser(waIntent, "Enviar a..."));
 
-        //HttpUtils.post("api/users/2", rp, new JsonHttpResponseHandler() {
-        HttpUtils.post("api/users/2", new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                // If the response is JSONObject instead of expected JSONArray
-                Log.d("asd", "---------------- this is response : " + response);
-
-                    try {
-                        JSONObject serverResp = new JSONObject(response.toString());
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONArray timeline) {
-                // Pull out the first event on the public timeline
-                Log.d("asd", "---------------- this is response : ");
-
-            }
-        });
+        } catch (PackageManager.NameNotFoundException e) {
+            Toast.makeText(this, "WhatsApp not Installed", Toast.LENGTH_SHORT).show();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
+
+    private void SendToWhatup(View view){
+        PackageManager pm=getPackageManager();
+        try {
+
+            String toNumber = "50687994999"; //
+            String text = "Texto de prueba";// Replace with your message.
+
+
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse("http://api.whatsapp.com/send?phone="+toNumber +"&text="+text));
+            startActivity(intent);
+
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            Toast.makeText(MainActivity.this,"it may be you dont have whats app",Toast.LENGTH_LONG).show();
+
+        }
+    }
+
+
 }
