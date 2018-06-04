@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">PlayingWithWhatsapp</string>
+    <string name="dialog_NoMessage">El numero de telefono debe de tener codigo de pais. No olvide incluir el mensaje</string>
+    <string name="dialog_ErrorTitle">Informacion</string>
+    <string name="noWhatapp">Debes de instalar Whatsapp</string>
 </resources>
